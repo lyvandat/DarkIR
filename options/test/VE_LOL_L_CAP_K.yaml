@@ -6,7 +6,7 @@ datasets:
     n_workers: 4 # per GPU
     verbose: True
   val:
-    test_path: /kaggle/input/datasets/datlyvan/velollcap/test
+    test_path: /kaggle/input/datasets/datlyvan/veloll/VE-LOL-L-Cap-Full
     batch_size_test: 1
 
 #### network structures
