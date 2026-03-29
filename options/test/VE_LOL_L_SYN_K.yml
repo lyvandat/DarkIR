@@ -1,7 +1,7 @@
 # some params are needed to work but are not really used in testing
 #### datasets
 datasets:
-  name: VE_LOL_L_CAP
+  name: VE_LOL_L_SYN
   train:
     n_workers: 4 # per GPU
     verbose: True
