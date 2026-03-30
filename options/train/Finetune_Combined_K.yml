@@ -44,7 +44,7 @@ train:
   lr_initial: !!float 2e-5
   lr_scheme: CosineAnnealing
   betas: [0.9, 0.9]
-  epochs: 10
+  epochs: 1
   lr_gamma: 0.5
   weight_decay: !!float 1e-3
   eta_min: !!float 1e-7
