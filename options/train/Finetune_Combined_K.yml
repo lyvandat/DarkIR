@@ -1,0 +1,89 @@
+#### training devices
+device:
+  cuda: True
+  gpus: 0,1
+  ids: [0, 1]
+
+#### datasets
+datasets:
+  name: Combined
+  train:
+    train_paths:
+      LoLI_Street: /kaggle/input/datasets/datlyvan/lolistreet/Train
+      VE_LOL_L_CAP: /kaggle/input/datasets/datlyvan/veloll/VE-LOL-L-Cap-Full
+      VE_LOL_L_SYN: /kaggle/input/datasets/datlyvan/veloll/VE-LOL-L-Syn
+    n_workers: 4 # per GPU
+    batch_size_train: 8
+    cropsize: 256
+    flips: True
+    verbose: True
+    crop_type: Random
+  val:
+    test_paths:
+      LoLI_Street: /kaggle/input/datasets/datlyvan/lolistreet/Val
+      VE_LOL_L_CAP: /kaggle/input/datasets/datlyvan/veloll/VE-LOL-L-Cap-Full
+      VE_LOL_L_SYN: /kaggle/input/datasets/datlyvan/veloll/VE-LOL-L-Syn
+    batch_size_test: 1
+
+#### network structures
+network:
+  name: DarkIR
+  resume_training: False
+  pretrained_weights: /kaggle/input/datasets/datlyvan/darkirweight/Checkpoints/DarkIR_384.pt
+  img_channels: 3
+  width: 32
+  middle_blk_num_enc: 2
+  middle_blk_num_dec: 2
+  enc_blk_nums: [1, 2, 3]
+  dec_blk_nums: [3, 1, 1]
+  dilations: [1, 4, 9]
+  extra_depth_wise: True
+
+#### training settings: learning rate scheme, loss
+train:
+  lr_initial: !!float 2e-5
+  lr_scheme: CosineAnnealing
+  betas: [0.9, 0.9]
+  epochs: 50
+  lr_gamma: 0.5
+  weight_decay: !!float 1e-3
+  eta_min: !!float 1e-7
+
+  pixel_criterion: l1
+  pixel_weight: 1.0
+
+  perceptual: True
+  perceptual_criterion: l1
+  perceptual_weight: 0.01
+  perceptual_reduction: mean
+
+  edge: True
+  edge_criterion: l2
+  edge_weight: 50.0
+  edge_reduction: mean
+
+  frequency: False
+  frequency_criterion: l2
+  frequency_weight: 0.01
+  frequency_reduction: sum
+
+  enhance: False
+  enhance_criterion: l1
+  enhance_weight: 0.8
+  enhance_reduction: mean
+
+#### save model
+save:
+  path: ./models/DarkIR_384_Combined.pt
+  best: ./models/bests/DarkIR_384_Combined_best.pt
+  new: ./models/DarkIR_384_Combined.pt
+
+#### wandb:
+wandb:
+  init: False
+  project: DarkIR_Finetune_Combined
+  entity: cidautai
+  name: DarkIR_Combined
+  save_code: True
+  resume: never
+  id: None

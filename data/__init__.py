@@ -11,6 +11,7 @@ from .dataset_reader.dataset_exdark import main_dataset_exdark
 from .dataset_reader.dataset_loli_street import main_dataset_loli_street
 from .dataset_reader.dataset_ve_lol_l_cap import main_dataset_ve_lol_l_cap
 from .dataset_reader.dataset_ve_lol_l_syn import main_dataset_ve_lol_l_syn
+from .dataset_reader.dataset_combined import main_dataset_combined
 
 def create_test_data(rank, world_size, opt):
     '''
@@ -132,15 +133,15 @@ def create_data(rank, world_size, opt):
     opt: a dictionary from the yaml config key datasets 
     '''
     name = opt['name']
-    train_path=opt['train']['train_path']
-    test_path = opt['val']['test_path']
+    train_path=opt['train'].get('train_path')
+    test_path = opt['val'].get('test_path')
     batch_size_train=opt['train']['batch_size_train']
     batch_size_test=opt['val']['batch_size_test']
     flips = opt['train']['flips']
     verbose=opt['train']['verbose']
     cropsize=opt['train']['cropsize']
     num_workers=opt['train']['n_workers']
-    crop_type=opt['train']['crop_type']  
+    crop_type=opt['train']['crop_type']
     
     if rank != 0:
         verbose = False
@@ -248,6 +249,21 @@ def create_data(rank, world_size, opt):
         train_loader, test_loader, samplers = main_dataset_ve_lol_l_syn(rank=rank,
                                                 train_path=train_path,
                                                 test_path=test_path,
+                                                batch_size_train=batch_size_train,
+                                                batch_size_test=batch_size_test,
+                                                flips=flips,
+                                                verbose=verbose,
+                                                cropsize=cropsize,
+                                                num_workers=num_workers,
+                                                crop_type=crop_type,
+                                                world_size=world_size)
+
+    elif name == 'Combined':
+        train_paths = opt['train'].get('train_paths', {})
+        test_paths = opt['val'].get('test_paths', {})
+        train_loader, test_loader, samplers = main_dataset_combined(rank=rank,
+                                                train_paths=train_paths if train_paths else None,
+                                                test_paths=test_paths,
                                                 batch_size_train=batch_size_train,
                                                 batch_size_test=batch_size_test,
                                                 flips=flips,
