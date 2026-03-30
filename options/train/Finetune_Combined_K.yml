@@ -9,7 +9,7 @@ datasets:
   name: Combined
   train:
     train_paths:
-      LoLI_Street: /kaggle/input/datasets/datlyvan/lolistreet/Val
+      LoLI_Street: /kaggle/input/datasets/datlyvan/lolistreet/Train
       VE_LOL_L_CAP: /kaggle/input/datasets/datlyvan/veloll/VE-LOL-L-Cap-Full
       VE_LOL_L_SYN: /kaggle/input/datasets/datlyvan/veloll/VE-LOL-L-Syn
     n_workers: 4 # per GPU
@@ -44,7 +44,7 @@ train:
   lr_initial: !!float 2e-5
   lr_scheme: CosineAnnealing
   betas: [0.9, 0.9]
-  epochs: 1
+  epochs: 10
   lr_gamma: 0.5
   weight_decay: !!float 1e-3
   eta_min: !!float 1e-7
