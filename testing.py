@@ -41,7 +41,13 @@ def load_model(model, path_weights, rank=0, use_multi=False):
 
     map_location = get_map_location(rank)
     checkpoints = torch.load(path_weights, map_location=map_location, weights_only=False)
-    weights = checkpoints['params']
+    if 'params' in checkpoints:
+        weights = checkpoints['params']
+    elif 'model_state_dict' in checkpoints:
+        weights = checkpoints['model_state_dict']
+    else:
+        # bare state dict saved directly
+        weights = checkpoints
 
     if rank == 0:
         macs, params = get_model_complexity_info(model, (3, 256, 256), print_per_layer_stat=False, verbose=False)
