@@ -53,9 +53,15 @@ def load_model(model, path_weights, rank=0, use_multi=False):
         macs, params = get_model_complexity_info(model, (3, 256, 256), print_per_layer_stat=False, verbose=False)
         print('Network complexity: ' ,macs, params)
 
-    # Add 'module.' prefix when loading into DDP-wrapped model
-    if use_multi:
-        weights = {'module.' + key: value for key, value in weights.items()}
+    # Align 'module.' prefix between checkpoint keys and the model wrapper
+    keys = list(weights.keys())
+    checkpoint_has_prefix = keys[0].startswith('module.') if keys else False
+    if use_multi and not checkpoint_has_prefix:
+        # Model is DDP-wrapped but checkpoint was saved without prefix
+        weights = {'module.' + k: v for k, v in weights.items()}
+    elif not use_multi and checkpoint_has_prefix:
+        # Model is not DDP-wrapped but checkpoint was saved with prefix
+        weights = {k[len('module.'):]: v for k, v in weights.items()}
 
     model.load_state_dict(weights)
     if rank == 0:
